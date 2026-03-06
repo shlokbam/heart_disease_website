@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .dash-header {
+        padding: 56px 48px 40px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(230,57,70,0.05) 0%, transparent 100%);
+    }
+    .dash-header .section-label { color: var(--red); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
+    .dash-header h2 { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+    .dash-header p { color: var(--muted); line-height: 1.75; max-width: 600px; }
+
+    .tab-bar {
+        padding: 0 48px;
+        border-bottom: 1px solid var(--border);
+        display: flex; gap: 0;
+        overflow-x: auto;
+    }
+    .tab-btn {
+        padding: 18px 24px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+
+    .embed-container {
+        padding: 40px 48px;
+    }
+    .tableau-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        min-height: 900px;
+        position: relative;
+    }
+    .tableau-loading {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 16px;
+        color: var(--muted);
+    }
+    .loading-heart {
+        width: 48px; height: 48px;
+        animation: heartbeat 1.2s ease infinite;
+    }
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+    .tableau-wrap iframe, .tableau-wrap tableauViz { width: 100%; min-height: 900px; border: none; }
+
+    .insights-grid {
+        padding: 0 48px 60px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .insight-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+    }
+    .insight-card h4 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+    .insight-card p { font-size: 0.83rem; color: var(--muted); line-height: 1.65; }
+    .insight-tag {
+        display: inline-block;
+        background: rgba(230,57,70,0.12);
+        color: var(--red-light);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 100px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 900px) {
+        .dash-header, .tab-bar, .embed-container, .insights-grid { padding-left: 20px; padding-right: 20px; }
+        .insights-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+    <div class="section-label">Interactive Tableau Dashboard</div>
+    <h2>Heart Disease Analysis</h2>
+    <p>Explore our fully interactive Tableau dashboards published on Tableau Public. Analyze correlations between demographics, lifestyle factors, and heart disease prevalence across 4,500+ patient records.</p>
+</div>
+
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="showDash(1, this)">Dashboard 1 — Overview</button>
+    <button class="tab-btn" onclick="showDash(2, this)">Dashboard 2 — Health & Activity</button>
+    <button class="tab-btn" onclick="showDash(3, this)">Dashboard 3 — BMI & Diabetes</button>
+    <button class="tab-btn" onclick="showDash('story', this)">Heart Disease Story</button>
+</div>
+
+<div class="embed-container">
+    <div class="tableau-wrap" id="tableau-wrap">
+        <div class="tableau-loading">
+            <svg class="loading-heart" viewBox="0 0 100 90" fill="#E63946">
+                <path d="M50 80C50 80 5 52 5 28C5 14 16 5 30 5C39 5 47 9 50 17C53 9 61 5 70 5C84 5 95 14 95 28C95 52 50 80 50 80Z"/>
+            </svg>
+            <span>Loading Tableau Dashboard...</span>
+        </div>
+        <div id="vizContainer"></div>
+    </div>
+</div>
+
+<div class="insights-grid">
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 1</div>
+        <h4>Gender & Age Distribution</h4>
+        <p>Females: 2,377 No / 227 Yes. Males: 1,640 No / 256 Yes. Heart disease peaks in the 60–80 age range across both genders.</p>
+    </div>
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 1</div>
+        <h4>Smoking & Alcohol Impact</h4>
+        <p>Non-smokers, non-drinkers form the largest group (~2,500 cases). Smoking combined with alcohol shows elevated risk patterns.</p>
+    </div>
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 2</div>
+        <h4>Racewise Prevalence</h4>
+        <p>White population: 75.57% of heart disease cases. Black: 17.81%. Hispanic: 3.73%. American Indian/Alaskan: 0.21%.</p>
+    </div>
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 2</div>
+        <h4>General Health vs Heart Disease</h4>
+        <p>Patients reporting "Good" general health had 172 cases. "Fair" had 140. "Poor" had 92. Counterintuitively, more "Good" reporters had disease.</p>
+    </div>
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 3</div>
+        <h4>BMI & Diabetes by Age</h4>
+        <p>Treemap shows 18–24 year-old diabetics have highest average BMI (~42.78). Older age groups show varied BMI patterns by diabetes type.</p>
+    </div>
+    <div class="insight-card">
+        <div class="insight-tag">Dashboard 3</div>
+        <h4>Stroke, Diabetes & Heart Disease</h4>
+        <p>Multi-variable grouped bar chart reveals that age groups 55–69 with heart disease and diabetes have the most stroke cases.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="module">
+    const urls = {
+        1: 'https://public.tableau.com/views/heart_disease_dashboard_17728172824120/Dashboard1',
+        2: 'https://public.tableau.com/views/heart_disease_dashboard_17728172824120/Dashboard2',
+        3: 'https://public.tableau.com/views/heart_disease_dashboard_17728172824120/Dashboard3',
+        story: 'https://public.tableau.com/views/heart_disease_dashboard_17728172824120/HeartDiseaseAnalysisStory'
+    };
+
+    let currentViz = null;
+
+    async function loadTableau() {
+        const { TableauViz } = await import('https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js');
+        window.TableauViz = TableauViz;
+        showDash(1, document.querySelector('.tab-btn.active'));
+    }
+
+    window.showDash = function(id, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const container = document.getElementById('vizContainer');
+        container.innerHTML = '';
+
+        if (window.TableauViz) {
+            const viz = new window.TableauViz();
+            viz.src = urls[id];
+            viz.toolbar = 'bottom';
+            viz.hideTabs = false;
+            viz.style.width = '100%';
+            viz.style.height = '900px';
+            container.appendChild(viz);
+            document.querySelector('.tableau-loading').style.display = 'none';
+        } else {
+            // Fallback iframe embed
+            container.innerHTML = `<iframe src="${urls[id]}?:embed=yes&:showVizHome=no&:host_url=https://public.tableau.com/&:embed_code_version=3&:tabs=yes&:toolbar=yes&:animate_transition=yes&:display_static_image=no&:display_spinner=no&:display_overlay=yes&:display_count=yes&:language=en-US" width="100%" height="900" frameborder="0" onload="document.querySelector('.tableau-loading').style.display='none'"></iframe>`;
+        }
+    };
+
+    window.showDash = function(id, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const container = document.getElementById('vizContainer');
+        const iframeSrc = `${urls[id]}?:embed=yes&:showVizHome=no&:tabs=yes&:toolbar=yes&:animate_transition=yes&:display_count=yes&:language=en-US&:publish=yes&:origin=viz_share_link`;
+        container.innerHTML = `<iframe src="${iframeSrc}" width="100%" height="900" frameborder="0" onload="document.querySelector('.tableau-loading').style.display='none'"></iframe>`;
+    };
+
+    // Initial load
+    showDash(1, document.querySelector('.tab-btn.active'));
+</script>
+{% endblock %}

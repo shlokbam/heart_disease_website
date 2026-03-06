@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}Our Team{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .page-header {
+        padding: 56px 48px 40px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(230,57,70,0.05) 0%, transparent 100%);
+    }
+    .page-header .section-label { color: var(--red); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
+    .page-header h2 { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+    .page-header p { color: var(--muted); line-height: 1.75; max-width: 600px; }
+
+    .team-body { padding: 56px 48px; }
+
+    /* TEAM LEAD */
+    .lead-section { margin-bottom: 64px; }
+    .lead-section h3 {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--red);
+        margin-bottom: 28px;
+    }
+    .lead-card {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        background: var(--card);
+        border: 1px solid rgba(230,57,70,0.25);
+        border-radius: 20px;
+        padding: 36px;
+        max-width: 600px;
+        position: relative;
+        overflow: hidden;
+    }
+    .lead-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--red), var(--red-light));
+    }
+    .avatar {
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        color: white;
+    }
+    .avatar-lead { background: linear-gradient(135deg, #E63946, #c1121f); border: 3px solid rgba(230,57,70,0.4); }
+    .avatar-member { background: linear-gradient(135deg, #1c2438, #2d3a52); border: 2px solid var(--border); }
+    .member-info h4 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+    .member-info .role-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(230,57,70,0.12);
+        border: 1px solid rgba(230,57,70,0.3);
+        color: var(--red-light);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .member-info .role-badge-member {
+        background: rgba(255,255,255,0.05);
+        border-color: var(--border);
+        color: var(--muted);
+    }
+    .member-info p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    /* MEMBERS GRID */
+    .members-section h3 {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 28px;
+    }
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    .member-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px 24px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .member-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
+    .member-card .avatar {
+        width: 70px; height: 70px;
+        font-size: 1.5rem;
+        margin: 0 auto 16px;
+    }
+    .member-card h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .member-card .role-badge {
+        display: inline-flex;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 12px;
+        border-radius: 100px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .member-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* PROGRAM INFO */
+    .program-section {
+        margin-top: 64px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+    }
+    .program-section h3 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
+    .program-section p { color: var(--muted); font-size: 0.9rem; line-height: 1.75; }
+    .program-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .prog-stat {
+        background: var(--navy-light);
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+    }
+    .prog-stat .num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--red); }
+    .prog-stat .label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    @media (max-width: 900px) {
+        .team-body, .page-header { padding: 24px; }
+        .members-grid { grid-template-columns: 1fr 1fr; }
+        .lead-card { flex-direction: column; text-align: center; }
+        .program-section { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+        .members-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="section-label">Meet The Team</div>
+    <h2>The People Behind HeartLens</h2>
+    <p>A group of passionate data analysts from the SmartBridge Data Analytics with Tableau program, working together to transform heart disease data into actionable insights.</p>
+</div>
+
+<div class="team-body">
+    <!-- TEAM LEAD -->
+    <div class="lead-section">
+        <h3>⭐ Team Lead</h3>
+        <div class="lead-card">
+            <div class="avatar avatar-lead">A</div>
+            <div class="member-info">
+                <h4>Anagh Navarkar</h4>
+                <div class="role-badge">👑 Team Lead</div>
+                <p>Leading the Heart Disease Analysis project, coordinating between team members, overseeing Tableau dashboard development, and ensuring timely delivery of all milestones in the SmartBridge program.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="members-section">
+        <h3>👥 Team Members</h3>
+        <div class="members-grid">
+            <div class="member-card">
+                <div class="avatar avatar-member">P</div>
+                <h4>Prapti These</h4>
+                <div class="role-badge">Member</div>
+                <p>Contributing to data preparation, visualization design, and Tableau dashboard development for the heart disease analysis project.</p>
+            </div>
+            <div class="member-card">
+                <div class="avatar avatar-member">R</div>
+                <h4>Rohit Patil</h4>
+                <div class="role-badge">Member</div>
+                <p>Working on data extraction from database, SQL operations, and connecting the database with Tableau for live data visualization.</p>
+            </div>
+            <div class="member-card">
+                <div class="avatar avatar-member">R</div>
+                <h4>Rutuj Bhandari</h4>
+                <div class="role-badge">Member</div>
+                <p>Contributing to data analysis, story creation in Tableau, and performance testing to ensure efficient rendering of visualizations.</p>
+            </div>
+            <div class="member-card">
+                <div class="avatar avatar-member" style="background: linear-gradient(135deg, #2d1b2e, #3d2040);">S</div>
+                <h4>Shlok Bam</h4>
+                <div class="role-badge">Member</div>
+                <p>Building the Flask web integration, embedding Tableau dashboards into the UI, and developing this website to showcase the project.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRAM INFO -->
+    <div class="program-section">
+        <div>
+            <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--red);margin-bottom:12px">SmartBridge Program</div>
+            <h3>Data Analytics with Tableau</h3>
+            <p>This project is part of the <strong>SmartBridge SkillWallet</strong> program — a group project focusing on heart disease analysis using Tableau as the primary business intelligence and data visualization tool. The project covers the full data lifecycle from collection to web integration.</p>
+        </div>
+        <div class="program-stats">
+            <div class="prog-stat">
+                <div class="num">8</div>
+                <div class="label">Total Epics</div>
+            </div>
+            <div class="prog-stat">
+                <div class="num">15</div>
+                <div class="label">Total Stories</div>
+            </div>
+            <div class="prog-stat">
+                <div class="num">5</div>
+                <div class="label">Team Members</div>
+            </div>
+            <div class="prog-stat">
+                <div class="num">50%</div>
+                <div class="label">Project Progress</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

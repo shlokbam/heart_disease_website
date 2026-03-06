@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HeartLens{% endblock %} | Heart Disease Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red: #E63946;
+            --red-dark: #c1121f;
+            --red-light: #ff6b6b;
+            --navy: #0a0f1e;
+            --navy-mid: #111827;
+            --navy-light: #1c2438;
+            --card: #151d2e;
+            --border: rgba(255,255,255,0.07);
+            --text: #f0f4ff;
+            --muted: rgba(240,244,255,0.5);
+            --accent: #e63946;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--navy);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 48px;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(10,15,30,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .nav-logo span {
+            color: var(--red);
+        }
+        .heart-icon {
+            width: 28px; height: 28px;
+            background: var(--red);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            transform: rotate(-45deg);
+        }
+        .heart-icon::before, .heart-icon::after {
+            content: '';
+            position: absolute;
+            width: 28px; height: 28px;
+            background: var(--red);
+            border-radius: 50%;
+        }
+        .heart-icon::before { left: -14px; top: 0; }
+        .heart-icon::after { top: -14px; left: 0; }
+
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            letter-spacing: 0.02em;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text);
+            background: var(--navy-light);
+        }
+        .nav-links a.active { color: var(--red); }
+
+        /* MAIN CONTENT */
+        main { padding-top: 64px; min-height: 100vh; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+        footer strong { color: var(--red); }
+    </style>
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-logo">
+            <svg width="26" height="24" viewBox="0 0 26 24" fill="var(--red)">
+                <path d="M13 21.5C13 21.5 1 13.5 1 6.5C1 3.46 3.46 1 6.5 1C8.74 1 10.68 2.32 11.69 4.25L13 6.5L14.31 4.25C15.32 2.32 17.26 1 19.5 1C22.54 1 25 3.46 25 6.5C25 13.5 13 21.5 13 21.5Z"/>
+            </svg>
+            Heart<span>Lens</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a>
+            <a href="/dashboard" {% if request.path == '/dashboard' %}class="active"{% endif %}>Dashboard</a>
+            <a href="/dataset" {% if request.path == '/dataset' %}class="active"{% endif %}>Dataset</a>
+            <a href="/team" {% if request.path == '/team' %}class="active"{% endif %}>Our Team</a>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>Built for <strong>SmartBridge</strong> · Data Analytics with Tableau · Heart Disease Analysis Project</p>
+        <p style="margin-top:6px">Group Project — Shlok Bam, Anagh Navarkar, Prapti These, Rohit Patil, Rutuj Bhandari</p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

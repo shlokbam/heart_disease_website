@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% block title %}Dataset{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .page-header {
+        padding: 56px 48px 40px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(230,57,70,0.05) 0%, transparent 100%);
+    }
+    .page-header .section-label { color: var(--red); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
+    .page-header h2 { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+    .page-header p { color: var(--muted); line-height: 1.75; max-width: 620px; }
+
+    .dataset-body { padding: 48px; }
+
+    /* COLUMNS GRID */
+    .columns-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 48px;
+    }
+    .col-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition: border-color 0.2s;
+    }
+    .col-card:hover { border-color: rgba(230,57,70,0.3); }
+    .col-name { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+    .col-type { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); margin-bottom: 8px; }
+    .col-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* CHART AREA */
+    .charts-section h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 24px; }
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .chart-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px;
+    }
+    .chart-card h4 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 20px; }
+    canvas { max-height: 260px; }
+
+    /* TABLE */
+    .table-section { margin-top: 48px; }
+    .table-section h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
+    .table-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead { background: rgba(230,57,70,0.1); }
+    th {
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--red-light);
+        white-space: nowrap;
+    }
+    td { padding: 12px 16px; border-top: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+    tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+    .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .badge-yes { background: rgba(230,57,70,0.15); color: #ff8080; }
+    .badge-no { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+    @media (max-width: 900px) {
+        .dataset-body, .page-header { padding: 24px; }
+        .columns-grid { grid-template-columns: 1fr 1fr; }
+        .charts-row { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="section-label">Dataset Information</div>
+    <h2>Heart Disease Dataset</h2>
+    <p>The dataset contains <strong>4,500 patient records</strong> with 18 features covering demographics, lifestyle habits, and clinical health indicators collected for heart disease analysis.</p>
+</div>
+
+<div class="dataset-body">
+    <!-- COLUMN DESCRIPTIONS -->
+    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:24px;">Dataset Features</h3>
+    <div class="columns-grid">
+        <div class="col-card">
+            <div class="col-name">HeartDisease</div>
+            <div class="col-type">Target · Binary</div>
+            <div class="col-desc">Whether the respondent has heart disease (Yes/No). Primary outcome variable.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">BMI</div>
+            <div class="col-type">Numeric · Continuous</div>
+            <div class="col-desc">Body Mass Index — weight-to-height ratio indicating obesity levels. Range: ~12–94.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Smoking</div>
+            <div class="col-type">Binary · Lifestyle</div>
+            <div class="col-desc">Smoked at least 100 cigarettes in lifetime (Yes/No). Key cardiovascular risk factor.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">AlcoholDrinking</div>
+            <div class="col-type">Binary · Lifestyle</div>
+            <div class="col-desc">Heavy alcohol consumption — 14+ drinks/week for men, 7+ for women.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Stroke</div>
+            <div class="col-type">Binary · Clinical</div>
+            <div class="col-desc">History of stroke events (Yes/No). Strong comorbidity indicator for heart disease.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">PhysicalHealth</div>
+            <div class="col-type">Numeric · 0–30</div>
+            <div class="col-desc">Days in past 30 days when physical health was not good (illness/injury).</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">MentalHealth</div>
+            <div class="col-type">Numeric · 0–30</div>
+            <div class="col-desc">Days in past 30 days when mental health was not good (stress/depression).</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">DiffWalking</div>
+            <div class="col-type">Binary · Clinical</div>
+            <div class="col-desc">Serious difficulty walking or climbing stairs (Yes/No). Mobility indicator.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Sex</div>
+            <div class="col-type">Categorical · Demographic</div>
+            <div class="col-desc">Patient biological sex: Male or Female.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">AgeCategory</div>
+            <div class="col-type">Categorical · Demographic</div>
+            <div class="col-desc">Age bracket in 5-year intervals: 18–24, 25–29, ..., 80 or older.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Race</div>
+            <div class="col-type">Categorical · Demographic</div>
+            <div class="col-desc">Ethnicity: White, Black, Hispanic, Asian, American Indian/Alaskan, Other.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Diabetic</div>
+            <div class="col-type">Categorical · Clinical</div>
+            <div class="col-desc">Diabetes status: No, Yes, Borderline, Yes (during pregnancy).</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">PhysicalActivity</div>
+            <div class="col-type">Binary · Lifestyle</div>
+            <div class="col-desc">Physical activity outside of work in past 30 days (Yes/No).</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">GenHealth</div>
+            <div class="col-type">Ordinal · Self-reported</div>
+            <div class="col-desc">Self-assessed health: Excellent, Very Good, Good, Fair, Poor.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">SleepTime</div>
+            <div class="col-type">Numeric · Continuous</div>
+            <div class="col-desc">Average hours of sleep per 24-hour period. Sleep quality indicator.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">Asthma</div>
+            <div class="col-type">Binary · Clinical</div>
+            <div class="col-desc">History of asthma diagnosis (Yes/No). Comorbidity marker.</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">KidneyDisease</div>
+            <div class="col-type">Binary · Clinical</div>
+            <div class="col-desc">History of kidney disease excluding kidney stones (Yes/No).</div>
+        </div>
+        <div class="col-card">
+            <div class="col-name">SkinCancer</div>
+            <div class="col-type">Binary · Clinical</div>
+            <div class="col-desc">History of skin cancer diagnosis (Yes/No).</div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-section">
+        <h3>Data Insights</h3>
+        <div class="charts-row">
+            <div class="chart-card">
+                <h4>Heart Disease by Gender</h4>
+                <canvas id="genderChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h4>Heart Disease Prevalence</h4>
+                <canvas id="hdChart"></canvas>
+            </div>
+        </div>
+        <div class="charts-row">
+            <div class="chart-card">
+                <h4>General Health Distribution</h4>
+                <canvas id="genHealthChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h4>Lifestyle Risk Factors</h4>
+                <canvas id="lifestyleChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAMPLE TABLE -->
+    <div class="table-section">
+        <h3>Sample Records (First 20 Rows)</h3>
+        <div class="table-wrap">
+            <table id="sampleTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Heart Disease</th>
+                        <th>BMI</th>
+                        <th>Smoking</th>
+                        <th>Alcohol</th>
+                        <th>Stroke</th>
+                        <th>Sex</th>
+                        <th>Age Category</th>
+                        <th>Race</th>
+                        <th>Diabetic</th>
+                        <th>Gen Health</th>
+                        <th>Sleep</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="12" style="text-align:center;padding:32px;color:var(--muted)">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const chartDefaults = {
+    color: '#f0f4ff',
+    plugins: {
+        legend: { labels: { color: 'rgba(240,244,255,0.7)', font: { family: 'DM Sans', size: 12 } } }
+    }
+};
+
+fetch('/api/stats').then(r => r.json()).then(d => {
+    // Gender chart
+    new Chart(document.getElementById('genderChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Female', 'Male'],
+            datasets: [{
+                label: 'With Heart Disease',
+                data: [d.female_hd, d.male_hd],
+                backgroundColor: ['#E63946cc', '#E63946aa'],
+                borderRadius: 8
+            }]
+        },
+        options: { ...chartDefaults, responsive: true, scales: {
+            x: { ticks: { color: 'rgba(240,244,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(240,244,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }}
+    });
+
+    // HD donut
+    new Chart(document.getElementById('hdChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['No Heart Disease', 'Heart Disease'],
+            datasets: [{ data: [d.total - d.heart_disease_yes, d.heart_disease_yes], backgroundColor: ['#1c2438', '#E63946'], borderWidth: 0 }]
+        },
+        options: { ...chartDefaults, responsive: true, cutout: '70%' }
+    });
+
+    // Gen Health
+    const ghLabels = Object.keys(d.gen_health);
+    const ghVals = Object.values(d.gen_health);
+    new Chart(document.getElementById('genHealthChart'), {
+        type: 'bar',
+        data: {
+            labels: ghLabels,
+            datasets: [{ label: 'Count', data: ghVals, backgroundColor: '#E6394666', borderColor: '#E63946', borderWidth: 1, borderRadius: 8 }]
+        },
+        options: { ...chartDefaults, responsive: true, scales: {
+            x: { ticks: { color: 'rgba(240,244,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(240,244,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }}
+    });
+
+    // Lifestyle
+    new Chart(document.getElementById('lifestyleChart'), {
+        type: 'radar',
+        data: {
+            labels: ['Smokers', 'Diabetic', 'Stroke', 'Heart Disease', 'Alcohol'],
+            datasets: [{
+                label: 'Count (scaled)',
+                data: [
+                    (d.smokers / d.total * 100).toFixed(1),
+                    (d.diabetic / d.total * 100).toFixed(1),
+                    (d.stroke / d.total * 100).toFixed(1),
+                    d.heart_disease_rate,
+                    (d.total * 0.06 / d.total * 100).toFixed(1)
+                ],
+                backgroundColor: 'rgba(230,57,70,0.15)',
+                borderColor: '#E63946',
+                pointBackgroundColor: '#E63946'
+            }]
+        },
+        options: { ...chartDefaults, responsive: true, scales: {
+            r: { ticks: { color: 'rgba(240,244,255,0.4)', backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.06)' }, angleLines: { color: 'rgba(255,255,255,0.06)' }, pointLabels: { color: 'rgba(240,244,255,0.6)', font: { size: 11 } } }
+        }}
+    });
+});
+
+// Load sample table
+fetch('/api/sample').then(r => r.json()).catch(() => {
+    // fallback — show placeholder
+    return null;
+}).then(data => {
+    if (!data) {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--muted)">Sample data preview — see full dataset in Tableau</td></tr>';
+        return;
+    }
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = data.map((r, i) => `
+        <tr>
+            <td style="color:var(--muted)">${i+1}</td>
+            <td><span class="badge ${r.HeartDisease==='Yes'?'badge-yes':'badge-no'}">${r.HeartDisease}</span></td>
+            <td>${parseFloat(r.BMI).toFixed(1)}</td>
+            <td>${r.Smoking}</td>
+            <td>${r.AlcoholDrinking}</td>
+            <td>${r.Stroke}</td>
+            <td>${r.Sex}</td>
+            <td>${r.AgeCategory}</td>
+            <td>${r.Race}</td>
+            <td>${r.Diabetic}</td>
+            <td>${r.GenHealth}</td>
+            <td>${r.SleepTime}h</td>
+        </tr>
+    `).join('');
+});
+</script>
+{% endblock %}
