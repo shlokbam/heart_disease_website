@@ -1,4 +1,4 @@
-❤️ HeartLens — Heart Disease Analysis Website
+## ❤️ HeartLens — Heart Disease Analysis Website
 
 =======
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-black)](https://flask.palletsprojects.com/)
@@ -210,4 +210,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ for better heart health through data-driven insights**
->>>>>>> 0160486 (update README.md with project overview, key features, quick start guide, and application pages)
+
